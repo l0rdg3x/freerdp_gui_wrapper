@@ -28,7 +28,7 @@ TODO: A lot!
 
 1. Clone the repository:
 
-`git clone https://github.com/YourUsername/FreeRDP-GUI-Wrapper.git`
+`git clone https://github.com/l0rdg3x/FreeRDP-GUI-Wrapper.git`
 
 2. Navigate to the directory and run:
 
