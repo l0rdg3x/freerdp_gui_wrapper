@@ -1,27 +1,37 @@
 # FreeRDP GUI Wrapper
 
-A simple GUI application for FreeRDP to easily manage and establish RDP connections.
+A simple GUI application for FreeRDP to easily manage and establish RDP connections (Support Remote Desktop Gateway).
 
 TODO: A lot!
 
+## Screenshot
+
+![Screenshot of freerdp_gui_wrapper](./assets/screenshot.png)
+
 ## Features
 
-- Intuitive GUI for setting up and managing remote connections. (Not at all!)
-- Dynamic resolution adjustment.
-- Certificate validation options. (WIP)
-- Clipboard sharing.
-- Custom resolution settings.
-- Full screen toggle. (WIP)
-- Audio redirection. (Untested)
+- Intuitive GUI for setting up and managing remote connections. (Meh...)
+- Dynamic resolution adjustment. (Works!)
+- Certificate validation options. (Must be always on, for an freerdp issue)
+- Clipboard sharing. (Untested)
+- Custom resolution settings. (Untested)
+- Full screen option. (Works!)
+- Audio redirection. (Not work yet :()
 - Local drive path redirection. (Untested)
 - Printer redirection. (Untested)
-- Multi-monitor support. (Untested)
-- Integrated support for Remote Desktop Gateway. 
+- Multi-monitor support. (Works!)
+- Integrated support for Remote Desktop Gateway. (Works!)
+- Possibility to save config and reload. (Works!)
+
+## Tested on:
+
+- Manjaro Unstable KDE on XOrg
 
 ## Dependencies
 
 - `tkinter`
 - `ttkthemes`
+- `cryptography`
 - FreeRDP installed and available in PATH.
 
 ## Installation
@@ -41,6 +51,7 @@ TODO: A lot!
 ## Usage
 
 Simply launch the application, fill in the server details, choose your desired settings and click on the `Connect` button to establish an RDP session.
+Possibility to save config and reload.
 
 ## Contributing
 
