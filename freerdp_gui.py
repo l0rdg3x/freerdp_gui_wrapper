@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from ttkthemes import ThemedTk
 
+
 class FreeRDPGUI:
     def __init__(self, root):
         self.root = root
@@ -34,15 +35,15 @@ class FreeRDPGUI:
 
         server_frame = ttk.LabelFrame(self.main_frame, text="Server Information", padding="10")
         server_frame.grid(row=0, column=0, sticky=tk.EW, pady=(0, 10))
-        
+
         ttk.Label(server_frame, text="Hostname/IP:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         self.hostname_entry = ttk.Entry(server_frame)
         self.hostname_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
-        
+
         ttk.Label(server_frame, text="Username:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
         self.username_entry = ttk.Entry(server_frame)
         self.username_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.EW)
-        
+
         ttk.Label(server_frame, text="Password:").grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
         self.password_entry = ttk.Entry(server_frame, show='*')
         self.password_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.EW)
@@ -94,7 +95,7 @@ class FreeRDPGUI:
 
         rdg_frame = ttk.LabelFrame(self.main_frame, text="Remote Desktop Gateway", padding="10")
         rdg_frame.grid(row=2, column=0, sticky=tk.EW, pady=(0, 10))
-        
+
         self.rdg_enable_var = tk.IntVar()
         self.rdg_enable_chk = ttk.Checkbutton(rdg_frame, text="Use RD Gateway", variable=self.rdg_enable_var, command=self.toggle_rdg)
         self.rdg_enable_chk.grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
@@ -122,20 +123,20 @@ class FreeRDPGUI:
         ttk.Label(config_frame, text="Config Name:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         self.config_name_entry = ttk.Entry(config_frame)
         self.config_name_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
-        
+
         self.load_config_btn = ttk.Button(config_frame, text="Load Config", command=self.load_config)
         self.load_config_btn.grid(row=0, column=2, padx=5, pady=5)
-        
+
         self.save_config_btn = ttk.Button(config_frame, text="Save Config", command=self.export_config)
         self.save_config_btn.grid(row=0, column=3, padx=5, pady=5)
-        
+
         ttk.Label(config_frame, text="Select Config:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
         self.config_dropdown = ttk.Combobox(config_frame, values=self.get_available_configs())
         self.config_dropdown.grid(row=1, column=1, padx=5, pady=5, sticky=tk.EW)
-        
+
         self.delete_config_btn = ttk.Button(config_frame, text="Delete Config", command=self.delete_config)
         self.delete_config_btn.grid(row=1, column=2, padx=5, pady=5)
-        
+
         config_frame.grid_columnconfigure(1, weight=1)
 
     def load_or_initialize_cipher_suite(self):
@@ -173,12 +174,11 @@ class FreeRDPGUI:
             self.rdg_server_entry.config(state=tk.DISABLED)
             self.rdg_user_entry.config(state=tk.DISABLED)
             self.rdg_password_entry.config(state=tk.DISABLED)
-    
+
     def encrypt(self, message: str) -> str:
         return self.cipher_suite.encrypt(message.encode()).decode()
 
     def decrypt(self, encrypted_message: str) -> str:
-        
         return self.cipher_suite.decrypt(encrypted_message.encode()).decode()
 
     def get_config_path(self, config_name):
@@ -220,7 +220,7 @@ class FreeRDPGUI:
         config_filename = f"{config_name}.json"
         with open(config_path / config_filename, 'w') as file:
             json.dump(data, file)
-        
+
         self.config_dropdown['values'] = self.get_available_configs()
 
     def clear_all_fields(self):
@@ -237,7 +237,7 @@ class FreeRDPGUI:
 
         for entry in entries_to_clear:
             entry.delete(0, 'end')
-        
+
         checkboxes_to_clear = [
             self.dynamic_res_var,
             self.cert_ignore_var,
@@ -260,7 +260,7 @@ class FreeRDPGUI:
         if not config_name:
             messagebox.showwarning("Warning", "Please select a config to load!")
             return
-        
+
         config_path = self.get_config_path(config_name)
 
         if config_path.exists():
@@ -274,13 +274,13 @@ class FreeRDPGUI:
                 self.dynamic_res_var.set(data.get("dynamic_resolution", 0))
                 self.cert_ignore_var.set(data.get("ignore_certificate", 0))
                 self.clipboard_var.set(data.get("enable_clipboard", 0))
-                
+
                 res = data.get("resolution", "")
                 if res:
                     self.res_checkbox_var.set(1)
                     self.toggle_res_entry()
                     self.resolution_entry.insert(0, res)
-                
+
                 self.fullscreen_var.set(data.get("full_screen", 0))
                 self.audio_var.set(data.get("audio_redirection", 0))
 
@@ -289,10 +289,10 @@ class FreeRDPGUI:
                     self.drive_checkbox_var.set(1)
                     self.toggle_drive_entry()
                     self.drive_entry.insert(0, drive_path)
-                    
+
                 self.printer_var.set(data.get("printer_redirection", 0))
                 self.multimon_var.set(data.get("multiple_monitors", 0))
-                
+
                 self.rdg_enable_var.set(data.get("use_rdg", 0))
                 self.toggle_rdg()
                 self.rdg_server_entry.insert(0, data.get("rdg_server", ""))
@@ -307,7 +307,7 @@ class FreeRDPGUI:
         if not config_name:
             messagebox.showwarning("Warning", "Please select a config to delete!")
             return
-        
+
         config_path = self.get_config_path(config_name)
         if config_path.exists():
             config_path.unlink()
@@ -359,6 +359,7 @@ class FreeRDPGUI:
             subprocess.run(cmd)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to run FreeRDP: {e}")
+
 
 if __name__ == "__main__":
     root = ThemedTk(theme="arc")
