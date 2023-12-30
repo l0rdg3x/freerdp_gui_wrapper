@@ -20,7 +20,7 @@ class FreeRDPGUI:
         else:
             icon_path = 'app_icon.png'
         self.root.iconphoto(False, tk.PhotoImage(file=icon_path))
-        self.root.geometry('550x750')
+        self.root.geometry('1100x550')
         self.root.resizable(False, False)
 
         self.root.set_theme("arc")
@@ -33,7 +33,13 @@ class FreeRDPGUI:
         self.main_frame = ttk.Frame(root, padding="20")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        server_frame = ttk.LabelFrame(self.main_frame, text="Server Information", padding="10")
+        self.left_column_frame = ttk.Frame(self.main_frame, padding="10")
+        self.left_column_frame.grid(row=0, column=0, sticky=tk.NS)
+
+        self.right_column_frame = ttk.Frame(self.main_frame, padding="10")
+        self.right_column_frame.grid(row=0, column=1, sticky=tk.NS)
+
+        server_frame = ttk.LabelFrame(self.left_column_frame, text="Server Information", padding="10")
         server_frame.grid(row=0, column=0, sticky=tk.EW, pady=(0, 10))
 
         ttk.Label(server_frame, text="Hostname/IP:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
@@ -50,7 +56,7 @@ class FreeRDPGUI:
 
         server_frame.grid_columnconfigure(1, weight=1)
 
-        checkbox_frame = ttk.Frame(self.main_frame)
+        checkbox_frame = ttk.Frame(self.left_column_frame)
         checkbox_frame.grid(row=1, column=0, sticky=tk.EW, pady=(0, 10))
 
         self.dynamic_res_var = tk.IntVar()
@@ -93,8 +99,21 @@ class FreeRDPGUI:
         self.multimon_chk = ttk.Checkbutton(checkbox_frame, text="Multiple Monitors", variable=self.multimon_var)
         self.multimon_chk.grid(row=4, column=1, padx=10, pady=5, sticky=tk.W)
 
-        rdg_frame = ttk.LabelFrame(self.main_frame, text="Remote Desktop Gateway", padding="10")
-        rdg_frame.grid(row=2, column=0, sticky=tk.EW, pady=(0, 10))
+        remoteapp_frame = ttk.LabelFrame(self.left_column_frame, text="RemoteApp", padding="10")
+        remoteapp_frame.grid(row=2, column=0, sticky=tk.EW, pady=(0, 10))
+
+        ttk.Label(remoteapp_frame, text="Program Path:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        self.remoteapp_program_entry = ttk.Entry(remoteapp_frame)
+        self.remoteapp_program_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
+
+        ttk.Label(remoteapp_frame, text="Working Directory:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+        self.remoteapp_workdir_entry = ttk.Entry(remoteapp_frame)
+        self.remoteapp_workdir_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.EW)
+
+        remoteapp_frame.grid_columnconfigure(1, weight=1)
+
+        rdg_frame = ttk.LabelFrame(self.right_column_frame, text="Remote Desktop Gateway", padding="10")
+        rdg_frame.grid(row=3, column=0, sticky=tk.EW, pady=(0, 10))
 
         self.rdg_enable_var = tk.IntVar()
         self.rdg_enable_chk = ttk.Checkbutton(rdg_frame, text="Use RD Gateway", variable=self.rdg_enable_var, command=self.toggle_rdg)
@@ -114,11 +133,11 @@ class FreeRDPGUI:
 
         rdg_frame.grid_columnconfigure(1, weight=1)
 
-        self.connect_btn = ttk.Button(self.main_frame, text="Connect", command=self.connect)
-        self.connect_btn.grid(row=3, column=0, pady=20)
+        self.connect_btn = ttk.Button(self.right_column_frame, text="Connect", command=self.connect)
+        self.connect_btn.grid(row=4, column=0, pady=20)
 
-        config_frame = ttk.LabelFrame(self.main_frame, text="Configurations", padding="10")
-        config_frame.grid(row=4, column=0, sticky=tk.EW, pady=(0, 10))
+        config_frame = ttk.LabelFrame(self.right_column_frame, text="Configurations", padding="10")
+        config_frame.grid(row=1, column=0, sticky=tk.EW, pady=(0, 10))
 
         ttk.Label(config_frame, text="Config Name:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         self.config_name_entry = ttk.Entry(config_frame)
@@ -211,6 +230,8 @@ class FreeRDPGUI:
             "drive_path": self.drive_entry.get() if self.drive_checkbox_var.get() else "",
             "printer_redirection": self.printer_var.get(),
             "multiple_monitors": self.multimon_var.get(),
+            "remoteapp_program": self.remoteapp_program_entry.get(),
+            "remoteapp_workdir": self.remoteapp_workdir_entry.get(),
             "use_rdg": self.rdg_enable_var.get(),
             "rdg_server": self.rdg_server_entry.get(),
             "rdg_user": self.rdg_user_entry.get(),
@@ -230,6 +251,8 @@ class FreeRDPGUI:
             self.password_entry,
             self.resolution_entry,
             self.drive_entry,
+            self.remoteapp_program_entry,
+            self.remoteapp_workdir_entry,
             self.rdg_server_entry,
             self.rdg_user_entry,
             self.rdg_password_entry
@@ -293,6 +316,9 @@ class FreeRDPGUI:
                 self.printer_var.set(data.get("printer_redirection", 0))
                 self.multimon_var.set(data.get("multiple_monitors", 0))
 
+                self.remoteapp_program_entry.insert(0, data.get("remoteapp_program", ""))
+                self.remoteapp_workdir_entry.insert(0, data.get("remoteapp_workdir", ""))
+
                 self.rdg_enable_var.set(data.get("use_rdg", 0))
                 self.toggle_rdg()
                 self.rdg_server_entry.insert(0, data.get("rdg_server", ""))
@@ -354,6 +380,14 @@ class FreeRDPGUI:
             cmd.extend([f"/g:{self.rdg_server_entry.get()}"])
             cmd.extend([f"/gu:{self.rdg_user_entry.get()}"])
             cmd.extend([f"/gp:{self.rdg_password_entry.get()}"])
+
+        remoteapp_program = self.remoteapp_program_entry.get().strip()
+        if remoteapp_program:
+            cmd.append(f"/app:{remoteapp_program}")
+
+            remoteapp_workdir = self.remoteapp_workdir_entry.get().strip()
+            if remoteapp_workdir:
+                cmd.append(f"/app-working-dir:{remoteapp_workdir}")
 
         try:
             subprocess.run(cmd)
